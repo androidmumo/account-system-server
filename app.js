@@ -7,6 +7,8 @@ const {
 } = require('uuid');
 const jwt = require("jsonwebtoken")
 var mysql = require('mysql');
+var os = require("os")
+var cors = require('cors');
 
 //创建密钥
 const secret = "mclocidgreat";
@@ -135,6 +137,9 @@ var upload = multer({
 }).single('avatar')
 /* 图片上传 end */
 
+//跨域
+app.use(cors());
+
 // 静态托管
 app.use('/uploads', express.static('uploads'))
 
@@ -145,7 +150,64 @@ app.use(bodyParser.urlencoded({
 // 解析 application/json
 app.use(bodyParser.json())
 
+//服务端渲染，模板资源目录、使用ejs模板引擎
+app.set('views', 'views');
+app.set('views engine', 'ejs');
+
+/* ------------------------------------- 页面 -------------------------------------*/
+
+app.get('/', (request, response) => {
+  response.render('start.ejs'); // .ejs 可以省略
+});
+
 /* ------------------------------------- 接口 -------------------------------------*/
+
+// 服务状态
+app.get('/servicestatus', function (req, res) {
+  let serviceTime = process.uptime().toFixed(2);
+  let rss = (process.memoryUsage().rss / 1024 / 1024).toFixed(2) + ' MB';
+  let heapTotal = (process.memoryUsage().heapTotal / 1024 / 1024).toFixed(2) + ' MB';
+  let heapUsed = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2) + ' MB';
+  let external = (process.memoryUsage().external / 1024 / 1024).toFixed(2) + ' MB';
+  let arrayBuffers = (process.memoryUsage().arrayBuffers / 1024 / 1024).toFixed(2) + ' MB';
+  let serverLoad = os.loadavg();
+  let serverTotalMemory = (os.totalmem() / 1024 / 1024).toFixed(2);
+  let serverFreeMemory = (os.freemem() / 1024 / 1024).toFixed(2);
+
+  res.json({
+    code: 20000,
+    msg: '服务状态',
+    data: {
+      serviceTime: serviceTime,
+      serviceMemory: [{
+          name: 'rss',
+          data: rss
+        },
+        {
+          name: 'heapTotal',
+          data: heapTotal
+        },
+        {
+          name: 'heapUsed',
+          data: heapUsed
+        },
+        {
+          name: 'external',
+          data: external
+        },
+        {
+          name: 'arrayBuffers',
+          data: arrayBuffers
+        }
+      ],
+      serverLoad: serverLoad,
+      serverMemory: {
+        serverTotalMemory,
+        serverFreeMemory
+      }
+    }
+  })
+})
 
 // 图片上传
 app.post('/uploadavatar', function (req, res) {
