@@ -257,7 +257,7 @@
                         this.alertTitle = "平台已正常运行 " + Math.floor(this.data.serviceTime / 60 / 60 /
                                 24) + " 天 " + Math.floor((this.data.serviceTime / 60 / 60) % 24) +
                             " 小时 " + Math.floor((this.data.serviceTime / 60) % 60) + " 分钟 " + Math
-                            .floor(this.data.serviceTime % 60) + " 秒";
+                            .floor(this.data.serviceTime % 60) + " 秒" + " 接口共被调用 " + this.data.count + " 次";
                         this.serverLoad.a = (this.data.serverLoad[0] * 100).toFixed(2);
                         this.serverLoad.b = (this.data.serverLoad[1] * 100).toFixed(2);
                         this.serverLoad.c = (this.data.serverLoad[2] * 100).toFixed(2);

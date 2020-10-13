@@ -9,6 +9,7 @@ const jwt = require("jsonwebtoken")
 var mysql = require('mysql');
 var os = require("os")
 var cors = require('cors');
+const Apicount = require('./model/count')
 
 //创建密钥
 const secret = "mclocidgreat";
@@ -162,7 +163,7 @@ app.get('/', (request, response) => {
 
 /* ------------------------------------- 接口 -------------------------------------*/
 
-// 服务状态
+// 服务状态 0
 app.get('/servicestatus', function (req, res) {
   let serviceTime = process.uptime().toFixed(2);
   let rss = (process.memoryUsage().rss / 1024 / 1024).toFixed(2) + ' MB';
@@ -173,47 +174,66 @@ app.get('/servicestatus', function (req, res) {
   let serverLoad = os.loadavg();
   let serverTotalMemory = (os.totalmem() / 1024 / 1024).toFixed(2);
   let serverFreeMemory = (os.freemem() / 1024 / 1024).toFixed(2);
-
-  res.json({
-    code: 20000,
-    msg: '服务状态',
-    data: {
-      serviceTime: serviceTime,
-      serviceMemory: [{
-          name: 'rss',
-          data: rss
-        },
-        {
-          name: 'heapTotal',
-          data: heapTotal
-        },
-        {
-          name: 'heapUsed',
-          data: heapUsed
-        },
-        {
-          name: 'external',
-          data: external
-        },
-        {
-          name: 'arrayBuffers',
-          data: arrayBuffers
+  Apicount.find().then(mon => {
+    let id = mon[0]._id;
+    let count0 = mon[0].count0 + 1;
+    let count = mon[0].count;
+    Apicount.findByIdAndUpdate(id, {
+      count0: count0
+    }).then(mon => {
+      res.json({
+        code: 20000,
+        msg: '服务状态',
+        data: {
+          serviceTime: serviceTime,
+          serviceMemory: [{
+              name: 'rss',
+              data: rss
+            },
+            {
+              name: 'heapTotal',
+              data: heapTotal
+            },
+            {
+              name: 'heapUsed',
+              data: heapUsed
+            },
+            {
+              name: 'external',
+              data: external
+            },
+            {
+              name: 'arrayBuffers',
+              data: arrayBuffers
+            }
+          ],
+          serverLoad: serverLoad,
+          serverMemory: {
+            serverTotalMemory,
+            serverFreeMemory
+          },
+          count:count
         }
-      ],
-      serverLoad: serverLoad,
-      serverMemory: {
-        serverTotalMemory,
-        serverFreeMemory
-      }
-    }
+      })
+    })
   })
+
 })
 
-// 图片上传
+// 图片上传 1
 app.post('/uploadavatar', function (req, res) {
   console.log(req)
   let token = req.query.token;
   let uuid = req.query.uuid;
+  Apicount.find().then(mon => {
+    let id = mon[0]._id;
+    let count1 = mon[0].count1 + 1;
+    let count = mon[0].count + 1;
+    Apicount.findByIdAndUpdate(id, {
+      count1: count1,
+      count: count
+    }).then()
+  })
   checkToken(req, res, uuid, token, (decoded) => {
     upload(req, res, function (err) {
       if (err instanceof multer.MulterError) {
@@ -243,10 +263,19 @@ app.post('/uploadavatar', function (req, res) {
   })
 })
 
-// 检查用户名
+// 检查用户名 2
 app.post('/checkusername', (req, res) => {
   let username = req.body.username;
   let retrieveSql = `SELECT * FROM account WHERE username='${username}'`;
+  Apicount.find().then(mon => {
+    let id = mon[0]._id;
+    let count2 = mon[0].count2 + 1;
+    let count = mon[0].count + 1;
+    Apicount.findByIdAndUpdate(id, {
+      count2: count2,
+      count: count
+    }).then()
+  })
   addContent(retrieveSql, null, req, res, (result) => {
     if (result.length > 0) {
       res.json({
@@ -262,7 +291,7 @@ app.post('/checkusername', (req, res) => {
   })
 })
 
-//用户注册
+//用户注册 3
 app.post('/register', (req, res) => {
   let username = req.body.username
   let password = req.body.password
@@ -270,6 +299,15 @@ app.post('/register', (req, res) => {
   let retrieveSql = `SELECT * FROM account WHERE username='${username}'`;
   let createSql = 'INSERT INTO account(Id,uuid,username,password,avatarurl,description,other) VALUES(0,?,?,?,?,?,?)';
   let createSqlParams = [uuid, username, password, '', '', ''];
+  Apicount.find().then(mon => {
+    let id = mon[0]._id;
+    let count3 = mon[0].count3 + 1;
+    let count = mon[0].count + 1;
+    Apicount.findByIdAndUpdate(id, {
+      count3: count3,
+      count: count
+    }).then()
+  })
   addContent(retrieveSql, null, req, res, (result) => {
     if (result.length > 0) {
       res.json({
@@ -292,11 +330,20 @@ app.post('/register', (req, res) => {
 })
 
 //用户登录
-//查看是否有对应的用户名密码组合
+//查看是否有对应的用户名密码组合 4
 app.post('/login', (req, res) => {
   let username = req.body.username
   let password = req.body.password
   let retrieveSql = `SELECT * FROM account WHERE username='${username}' AND password='${password}'`;
+  Apicount.find().then(mon => {
+    let id = mon[0]._id;
+    let count4 = mon[0].count4 + 1;
+    let count = mon[0].count + 1;
+    Apicount.findByIdAndUpdate(id, {
+      count4: count4,
+      count: count
+    }).then()
+  })
   addContent(retrieveSql, null, req, res, (result) => {
     if (result.length > 0) {
       let uuid = result[0].uuid;
@@ -327,10 +374,19 @@ app.post('/login', (req, res) => {
   })
 })
 
-//获取单个用户信息
+//获取单个用户信息 5
 app.post('/getuser', (req, res) => {
   let token = req.body.token;
   let uuid = req.body.uuid;
+  Apicount.find().then(mon => {
+    let id = mon[0]._id;
+    let count5 = mon[0].count5 + 1;
+    let count = mon[0].count + 1;
+    Apicount.findByIdAndUpdate(id, {
+      count5: count5,
+      count: count
+    }).then()
+  })
   checkToken(req, res, uuid, token, (decoded) => {
     let retrieveSql = `SELECT * FROM account WHERE uuid='${uuid}'`;
     addContent(retrieveSql, null, req, res, (result) => {
@@ -350,10 +406,19 @@ app.post('/getuser', (req, res) => {
   })
 })
 
-// 修改用户信息
+// 修改用户信息 6
 app.post('/updateuser', (req, res) => {
   let token = req.body.token;
   let uuid = req.body.uuid;
+  Apicount.find().then(mon => {
+    let id = mon[0]._id;
+    let count6 = mon[0].count6 + 1;
+    let count = mon[0].count + 1;
+    Apicount.findByIdAndUpdate(id, {
+      count6: count6,
+      count: count
+    }).then()
+  })
   checkToken(req, res, uuid, token, (decoded) => {
     let username = req.body.username;
     let password = req.body.password;
@@ -413,10 +478,19 @@ app.post('/updateuser', (req, res) => {
   })
 })
 
-//注销用户
+//注销用户 7
 app.post('/cancelaccount', (req, res) => {
   let token = req.body.token;
   let uuid = req.body.uuid;
+  Apicount.find().then(mon => {
+    let id = mon[0]._id;
+    let count7 = mon[0].count7 + 1;
+    let count = mon[0].count + 1;
+    Apicount.findByIdAndUpdate(id, {
+      count7: count7,
+      count: count
+    }).then()
+  })
   checkToken(req, res, uuid, token, (decoded) => {
     let username = req.body.username;
     let password = req.body.password;
@@ -457,10 +531,19 @@ app.post('/cancelaccount', (req, res) => {
   })
 })
 
-// 获取全部用户列表《debug》 仅超级用户可用
+// 获取全部用户列表《debug》 仅超级用户可用 8
 app.post('/getalluser', (req, res) => {
   let token = req.body.token;
   let uuid = req.body.uuid;
+  Apicount.find().then(mon => {
+    let id = mon[0]._id;
+    let count8 = mon[0].count8 + 1;
+    let count = mon[0].count + 1;
+    Apicount.findByIdAndUpdate(id, {
+      count8: count8,
+      count: count
+    }).then()
+  })
   checkToken(req, res, uuid, token, (decoded) => {
     console.log(decoded)
     if (decoded.username == "admin") {
