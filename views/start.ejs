@@ -6,6 +6,9 @@
     <link href="https://cdn.bootcdn.net/ajax/libs/minireset.css/0.0.2/minireset.min.css" rel="stylesheet">
     <link href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/theme-chalk/index.css" rel="stylesheet">
     <title>开始</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.9/vue.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/index.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.20.0/axios.min.js"></script>
 </head>
 
 <body>
@@ -15,6 +18,8 @@
                 <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal">
                     <el-menu-item index="1">开始</el-menu-item>
                     <el-menu-item index="2"><a class="a-noline" href="#api">文档</a></el-menu-item>
+                    <el-menu-item index="2"><a class="a-noline" href="https://account.api.mcloc.cn/admin">后台</a>
+                    </el-menu-item>
                     <el-menu-item index="3" disabled>其他API</el-menu-item>
                     <el-menu-item index="4"><a class="a-noline" href="https://blog.mcloc.cn" target="_blank">小马奔腾的博客</a>
                     </el-menu-item>
@@ -23,7 +28,7 @@
             <el-main>
                 <el-row>
                     <el-col :span="20" :offset="2">
-                        <h1>登录注册接口，后端为node.js和mysql</h1>
+                        <h1>登录注册接口，后端为 Node.js 和 Mysql</h1>
                     </el-col>
                 </el-row>
                 <el-row>
@@ -92,107 +97,202 @@
                     <el-col :span="20" :offset="2">
                         <el-collapse v-model="activeNames">
                             <el-collapse-item title="上传头像 /uploadavatar" name="1">
-                                <div class="url">
-                                    <el-tag type="info">接口地址:</el-tag>
-                                    <el-tag>https://account.api.mcloc.cn/uploadavatar</el-tag>
-                                </div>
-                                <div>
-                                    <p>
+                                <div class="wrap">
+                                    <p class="title1">API基本信息</p>
+                                    <div>
+                                        <el-tag type="info">接口地址:</el-tag>
+                                        <el-tag>https://account.api.mcloc.cn/uploadavatar</el-tag>
+                                    </div>
+                                    <p class="tag">
                                         <el-tag type="success">POST</el-tag>
-                                        <el-tag type="warning">需要登录</el-tag>
+                                        <el-tag type="warning">需要鉴权</el-tag>
                                     </p>
-                                    <p class="text">需传入 uuid 和 token 进行鉴权（?uuid=abc123&token=xxx）。接收 form-data 类型的数据，键名为
-                                        avatar ，键值为图片文件，仅可上传 jpg 或 png 格式的图片。</p>
+                                    <p class="title1">需传入的参数及其格式</p>
+                                    <el-table :data="tableData1" border style="width: 100%">
+                                        <el-table-column prop="key" label="参数(key)" width="180">
+                                        </el-table-column>
+                                        <el-table-column prop="value" label="内容(value)" width="180">
+                                        </el-table-column>
+                                        <el-table-column prop="type" label="传入方式" width="380">
+                                        </el-table-column>
+                                        <el-table-column prop="other" label="备注">
+                                        </el-table-column>
+                                    </el-table>
+                                    <p class="title1">其他</p>
+                                    <p class="text">
+                                        uuid 和 token 用于鉴权（ uuid 和 token 需在请求头中设置，key分别为 uuid 和 token ）。<br>
+                                        注意：仅此接口的 uuid 通过请求头传输，在以下接口中， uuid 均通过请求体传输。<br>
+                                        （但所有 token 均通过请求体传输）
+                                    </p>
                                 </div>
                             </el-collapse-item>
                             <el-collapse-item title="检查用户名是否重复 /checkusername" name="2">
-                                <div class="url">
-                                    <el-tag type="info">接口地址:</el-tag>
-                                    <el-tag>https://account.api.mcloc.cn/checkusername</el-tag>
-                                </div>
-                                <div>
-                                    <p>
+                                <div class="wrap">
+                                    <p class="title1">API基本信息</p>
+                                    <div>
+                                        <el-tag type="info">接口地址:</el-tag>
+                                        <el-tag>https://account.api.mcloc.cn/checkusername</el-tag>
+                                    </div>
+                                    <p class="tag">
                                         <el-tag type="success">POST</el-tag>
                                     </p>
-                                    <p class="text">接收 x-www-form-urlencoded 类型的数据。用于检查用户名是否重复。</p>
+                                    <p class="title1">需传入的参数及其格式</p>
+                                    <el-table :data="tableData2" border style="width: 100%">
+                                        <el-table-column prop="key" label="参数(key)" width="180">
+                                        </el-table-column>
+                                        <el-table-column prop="value" label="内容(value)" width="180">
+                                        </el-table-column>
+                                        <el-table-column prop="type" label="传入方式" width="380">
+                                        </el-table-column>
+                                        <el-table-column prop="other" label="备注">
+                                        </el-table-column>
+                                    </el-table>
+                                    <p class="title1">其他</p>
+                                    <p class="text">
+                                        用于检查用户名是否重复。
+                                    </p>
                                 </div>
                             </el-collapse-item>
                             <el-collapse-item title="注册 /register" name="3">
-                                <div class="url">
-                                    <el-tag type="info">接口地址:</el-tag>
-                                    <el-tag>https://account.api.mcloc.cn/register</el-tag>
-                                </div>
-                                <div>
-                                    <p>
+                                <div class="wrap">
+                                    <p class="title1">API基本信息</p>
+                                    <div>
+                                        <el-tag type="info">接口地址:</el-tag>
+                                        <el-tag>https://account.api.mcloc.cn/register</el-tag>
+                                    </div>
+                                    <p class="tag">
                                         <el-tag type="success">POST</el-tag>
                                     </p>
-                                    <p class="text">接收 x-www-form-urlencoded 类型的数据。注册成功后会生成uuid保存到数据库。</p>
+                                    <p class="title1">需传入的参数及其格式</p>
+                                    <el-table :data="tableData3" border style="width: 100%">
+                                        <el-table-column prop="key" label="参数(key)" width="180">
+                                        </el-table-column>
+                                        <el-table-column prop="value" label="内容(value)" width="180">
+                                        </el-table-column>
+                                        <el-table-column prop="type" label="传入方式" width="380">
+                                        </el-table-column>
+                                        <el-table-column prop="other" label="备注">
+                                        </el-table-column>
+                                    </el-table>
+                                    <p class="title1">其他</p>
+                                    <p class="text">
+                                        注册成功后会返回用户名和通用唯一标识码 uuid 。
+                                    </p>
                                 </div>
                             </el-collapse-item>
                             <el-collapse-item title="登录 /login" name="4">
-                                <div class="url">
-                                    <el-tag type="info">接口地址:</el-tag>
-                                    <el-tag>https://account.api.mcloc.cn/login</el-tag>
-                                </div>
-                                <div>
-                                    <p>
+                                <div class="wrap">
+                                    <p class="title1">API基本信息</p>
+                                    <div>
+                                        <el-tag type="info">接口地址:</el-tag>
+                                        <el-tag>https://account.api.mcloc.cn/login</el-tag>
+                                    </div>
+                                    <p class="tag">
                                         <el-tag type="success">POST</el-tag>
                                     </p>
-                                    <p class="text">接收 x-www-form-urlencoded 类型的数据。注册成功后会返回uuid和token。</p>
+                                    <p class="title1">需传入的参数及其格式</p>
+                                    <el-table :data="tableData4" border style="width: 100%">
+                                        <el-table-column prop="key" label="参数(key)" width="180">
+                                        </el-table-column>
+                                        <el-table-column prop="value" label="内容(value)" width="180">
+                                        </el-table-column>
+                                        <el-table-column prop="type" label="传入方式" width="380">
+                                        </el-table-column>
+                                        <el-table-column prop="other" label="备注">
+                                        </el-table-column>
+                                    </el-table>
+                                    <p class="title1">其他</p>
+                                    <p class="text">
+                                        登录成功后会返回 uuid 和 token 。
+                                    </p>
                                 </div>
                             </el-collapse-item>
                             <el-collapse-item title="获取用户信息 /getuser" name="5">
-                                <div class="url">
-                                    <el-tag type="info">接口地址:</el-tag>
-                                    <el-tag>https://account.api.mcloc.cn/getuser</el-tag>
-                                </div>
-                                <div>
-                                    <p>
+                                <div class="wrap">
+                                    <p class="title1">API基本信息</p>
+                                    <div>
+                                        <el-tag type="info">接口地址:</el-tag>
+                                        <el-tag>https://account.api.mcloc.cn/getuser</el-tag>
+                                    </div>
+                                    <p class="tag">
                                         <el-tag type="success">POST</el-tag>
-                                        <el-tag type="warning">需要登录</el-tag>
+                                        <el-tag type="warning">需要鉴权</el-tag>
                                     </p>
+                                    <p class="title1">需传入的参数及其格式</p>
+                                    <el-table :data="tableData5" border style="width: 100%">
+                                        <el-table-column prop="key" label="参数(key)" width="180">
+                                        </el-table-column>
+                                        <el-table-column prop="value" label="内容(value)" width="180">
+                                        </el-table-column>
+                                        <el-table-column prop="type" label="传入方式" width="380">
+                                        </el-table-column>
+                                        <el-table-column prop="other" label="备注">
+                                        </el-table-column>
+                                    </el-table>
+                                    <p class="title1">其他</p>
                                     <p class="text">
-                                        接收 x-www-form-urlencoded 类型的数据。需要 uuid 和 token 进行鉴权（混入 x-www-form-urlencoded
-                                        即可）。
-                                        可获取的参数有：username、password、avatarurl、description、other
+                                        uuid 和 token 用于鉴权。<br>
+                                        可获取的参数有：username、password、avatarurl、description、other、registertime（注册时间）、updatatime（最后更新时间）
                                     </p>
                                 </div>
                             </el-collapse-item>
                             <el-collapse-item title="修改用户信息 /updateuser" name="6">
-                                <div class="url">
-                                    <el-tag type="info">接口地址:</el-tag>
-                                    <el-tag>https://account.api.mcloc.cn/updateuser</el-tag>
-                                </div>
-                                <div>
-                                    <p>
+                                <div class="wrap">
+                                    <p class="title1">API基本信息</p>
+                                    <div>
+                                        <el-tag type="info">接口地址:</el-tag>
+                                        <el-tag>https://account.api.mcloc.cn/updateuser</el-tag>
+                                    </div>
+                                    <p class="tag">
                                         <el-tag type="success">POST</el-tag>
-                                        <el-tag type="warning">需要登录</el-tag>
+                                        <el-tag type="warning">需要鉴权</el-tag>
                                     </p>
+                                    <p class="title1">需传入的参数及其格式</p>
+                                    <el-table :data="tableData6" border style="width: 100%">
+                                        <el-table-column prop="key" label="参数(key)" width="180">
+                                        </el-table-column>
+                                        <el-table-column prop="value" label="内容(value)" width="180">
+                                        </el-table-column>
+                                        <el-table-column prop="type" label="传入方式" width="380">
+                                        </el-table-column>
+                                        <el-table-column prop="other" label="备注">
+                                        </el-table-column>
+                                    </el-table>
+                                    <p class="title1">其他</p>
                                     <p class="text">
-                                        接收 x-www-form-urlencoded 类型的数据。需要 uuid 和 token 进行鉴权（混入 x-www-form-urlencoded
-                                        即可）。
-                                        可获取的参数有：username、password、avatarurl、description、other
+                                        uuid 和 token 用于鉴权。<br>
+                                        可修改的参数有：username、password、avatarurl、description、other<br>
+                                        这些参数为系统生成，不可修改：registertime（注册时间）、updatatime（最后更新时间）
                                     </p>
                                 </div>
                             </el-collapse-item>
                             <el-collapse-item title="注销（永久删除） /cancelaccount" name="7">
-                                <div class="url">
-                                    <el-tag type="info">接口地址:</el-tag>
-                                    <el-tag>https://account.api.mcloc.cn/cancelaccount</el-tag>
-                                </div>
-                                <div>
-                                    <p>
+                                <div class="wrap">
+                                    <p class="title1">API基本信息</p>
+                                    <div>
+                                        <el-tag type="info">接口地址:</el-tag>
+                                        <el-tag>https://account.api.mcloc.cn/cancelaccount</el-tag>
+                                    </div>
+                                    <p class="tag">
                                         <el-tag type="success">POST</el-tag>
-                                        <el-tag type="warning">需要登录</el-tag>
+                                        <el-tag type="warning">需要鉴权</el-tag>
                                         <el-tag type="danger" effect="dark">谨慎使用</el-tag>
                                     </p>
+                                    <p class="title1">需传入的参数及其格式</p>
+                                    <el-table :data="tableData7" border style="width: 100%">
+                                        <el-table-column prop="key" label="参数(key)" width="180">
+                                        </el-table-column>
+                                        <el-table-column prop="value" label="内容(value)" width="180">
+                                        </el-table-column>
+                                        <el-table-column prop="type" label="传入方式" width="380">
+                                        </el-table-column>
+                                        <el-table-column prop="other" label="备注">
+                                        </el-table-column>
+                                    </el-table>
+                                    <p class="title1">其他</p>
                                     <p class="text">
-                                        用于删除账户。
-                                        接收 x-www-form-urlencoded 类型的数据。需要 uuid 和 token 进行鉴权（混入 x-www-form-urlencoded
-                                        即可）。还需额外传入 username 和 password 进行确认。
+                                        用于删除账户，账户删除后不可恢复，请谨慎使用。
                                     </p>
-                                    <el-alert title="请谨慎调用此接口，账户删除后不可恢复！" type="error" :closable="false">
-                                    </el-alert>
                                 </div>
                             </el-collapse-item>
                         </el-collapse>
@@ -204,9 +304,6 @@
         </el-container>
     </div>
 </body>
-<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.9/vue.min.js"></script>
-<script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/index.js"></script>
-<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.20.0/axios.min.js"></script>
 
 <script>
     new Vue({
@@ -239,7 +336,119 @@
                         color: '#f56c6c',
                         percentage: 100
                     }
-                ]
+                ],
+                tableData1: [{
+                    key: 'uuid',
+                    value: 'String',
+                    type: 'uuid需在请求头中设置，key为uuid',
+                    other: '通用唯一标识符'
+                }, {
+                    key: 'token',
+                    value: 'String',
+                    type: 'token需在请求头中设置，key为token',
+                    other: '有效期24小时，过期需重新登录'
+                }, {
+                    key: 'avatar',
+                    value: '图片文件',
+                    type: 'form-data',
+                    other: '仅可上传jpg、png格式的图片'
+                }],
+                tableData2: [{
+                    key: 'username',
+                    value: 'String',
+                    type: '请求体(x-www-form-urlencoded)',
+                    other: '用于检查用户名是否重复'
+                }],
+                tableData3: [{
+                    key: 'username',
+                    value: 'String',
+                    type: '请求体(x-www-form-urlencoded)',
+                    other: '字符长度最大为255，暂时不限制字符类型。'
+                }, {
+                    key: 'password',
+                    value: 'String',
+                    type: '请求体(x-www-form-urlencoded)',
+                    other: '字符长度最大为255，暂时不限制字符类型。'
+                }],
+                tableData4: [{
+                    key: 'username',
+                    value: 'String',
+                    type: '请求体(x-www-form-urlencoded)',
+                    other: ''
+                }, {
+                    key: 'password',
+                    value: 'String',
+                    type: '请求体(x-www-form-urlencoded)',
+                    other: ''
+                }],
+                tableData5: [{
+                    key: 'uuid',
+                    value: 'String',
+                    type: '请求体(x-www-form-urlencoded)',
+                    other: ''
+                }, {
+                    key: 'token',
+                    value: 'String',
+                    type: 'token需在请求头中设置，key为token',
+                    other: ''
+                }],
+                tableData6: [{
+                    key: 'uuid',
+                    value: 'String',
+                    type: '请求体(x-www-form-urlencoded)',
+                    other: '仅用作鉴权，不可修改'
+                }, {
+                    key: 'token',
+                    value: 'String',
+                    type: 'token需在请求头中设置，key为token',
+                    other: '仅用作鉴权，不可修改'
+                }, {
+                    key: 'username',
+                    value: 'String',
+                    type: '请求体(x-www-form-urlencoded)',
+                    other: ''
+                }, {
+                    key: 'password',
+                    value: 'String',
+                    type: '请求体(x-www-form-urlencoded)',
+                    other: ''
+                }, {
+                    key: 'avatarurl',
+                    value: 'String',
+                    type: '请求体(x-www-form-urlencoded)',
+                    other: ''
+                }, {
+                    key: 'description',
+                    value: 'String',
+                    type: '请求体(x-www-form-urlencoded)',
+                    other: ''
+                }, {
+                    key: 'other',
+                    value: 'String',
+                    type: '请求体(x-www-form-urlencoded)',
+                    other: ''
+                }],
+                tableData7: [{
+                    key: 'uuid',
+                    value: 'String',
+                    type: '请求体(x-www-form-urlencoded)',
+                    other: '用于鉴权'
+                }, {
+                    key: 'token',
+                    value: 'String',
+                    type: 'token需在请求头中设置，key为token',
+                    other: '用于鉴权'
+                }, {
+                    key: 'username',
+                    value: 'String',
+                    type: '请求体(x-www-form-urlencoded)',
+                    other: '用于鉴权'
+                }, {
+                    key: 'password',
+                    value: 'String',
+                    type: '请求体(x-www-form-urlencoded)',
+                    other: '用于鉴权'
+                }],
             }
         },
         // 方法集合
@@ -257,13 +466,14 @@
                         this.alertTitle = "平台已正常运行 " + Math.floor(this.data.serviceTime / 60 / 60 /
                                 24) + " 天 " + Math.floor((this.data.serviceTime / 60 / 60) % 24) +
                             " 小时 " + Math.floor((this.data.serviceTime / 60) % 60) + " 分钟 " + Math
-                            .floor(this.data.serviceTime % 60) + " 秒" + " 接口共被调用 " + this.data.count + " 次";
+                            .floor(this.data.serviceTime % 60) + " 秒" + " 接口共被调用 " + this.data.count +
+                            " 次";
                         this.serverLoad.a = (this.data.serverLoad[0] * 100).toFixed(2);
                         this.serverLoad.b = (this.data.serverLoad[1] * 100).toFixed(2);
                         this.serverLoad.c = (this.data.serverLoad[2] * 100).toFixed(2);
                     }
                 });
-            }
+            },
         },
         // 生命周期 - 创建完成（可以访问当前this实例）
         created() {
@@ -306,13 +516,24 @@
         margin-top: 20px;
     }
 
-    .url {
+    .tag {
         line-height: 58px;
     }
 
     .text {
         color: #666666;
-        margin: 10px 0;
+        padding-bottom: 50px;
+    }
+
+    .wrap {
+        padding: 0 50px;
+    }
+
+    .title1 {
+        padding: 30px 0 10px;
+        font-size: 15px;
+        font-weight: 600;
+        color: #666666;
     }
 </style>
 
